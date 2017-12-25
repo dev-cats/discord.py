@@ -857,17 +857,18 @@ class Messageable(metaclass=abc.ABCMeta):
         """
         return Typing(self)
 
-    async def fetch_message(self, id):
+    async def fetch_message(self, id, use_history=None):
         """|coro|
 
         Retrieves a single :class:`.Message` from the destination.
-
-        This can only be used by bot accounts.
 
         Parameters
         ------------
         id: :class:`int`
             The message ID to look for.
+        use_history: Optional[:class:`bool`]
+            If True, lookup message using history endpoint rather than the
+            get_message endpoint. Defaults to False for bots, True for users.
 
         Raises
         --------
@@ -877,6 +878,9 @@ class Messageable(metaclass=abc.ABCMeta):
             You do not have the permissions required to get a message.
         :exc:`.HTTPException`
             Retrieving the message failed.
+        :exc:`LookupError`
+            History HTTP request was successful, but the requested message was
+            not found.
 
         Returns
         --------
@@ -885,8 +889,18 @@ class Messageable(metaclass=abc.ABCMeta):
         """
 
         channel = await self._get_channel()
-        data = await self._state.http.get_message(channel.id, id)
-        return self._state.create_message(channel=channel, data=data)
+
+        if use_history is None:
+            use_history = not self._state.is_bot
+
+        if use_history:
+            data = await self._state.http.logs_from(channel.id, limit=1, before=id + 1)
+            if data and int(data[0]['id']) == id:
+                return self._state.create_message(channel=channel, data=data[0])
+            raise LookupError("Message not found", channel.id, id)
+        else:
+            data = await self._state.http.get_message(channel.id, id)
+            return self._state.create_message(channel=channel, data=data)
 
     async def pins(self):
         """|coro|
