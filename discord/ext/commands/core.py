@@ -419,7 +419,7 @@ class Command(_BaseCommand):
             if inspect.isclass(param.default) and issubclass(param.default, defaults.CustomDefault):
                 instance = param.default()
                 return await instance.default(ctx=ctx, param=param)
-            elif isinstance(param.default, converters.CustomDefault):
+            elif isinstance(param.default, defaults.CustomDefault):
                 return await param.default.default(ctx=ctx, param=param)
         except CommandError as e:
             raise e
