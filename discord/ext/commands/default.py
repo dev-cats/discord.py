@@ -34,7 +34,18 @@ __all__ = (
     'Call',
 )
 
-class CustomDefault:
+
+class CustomDefaultMeta(type):
+    def __new__(cls, *args, **kwargs):
+        name, bases, attrs = args
+        attrs['display'] = kwargs.pop('display', name)
+        return super().__new__(cls, name, bases, attrs, **kwargs)
+
+    def __repr__(cls):
+        return cls.display
+
+
+class CustomDefault(metaclass=CustomDefaultMeta):
     """The base class of custom defaults that require the :class:`.Context`.
 
     Classes that derive from this should override the :meth:`~.CustomDefault.default`
@@ -64,11 +75,13 @@ class Author(CustomDefault):
     async def default(self, ctx, param):
         return ctx.author
 
+
 class Channel(CustomDefault):
     """Default parameter which returns the channel for this context."""
 
     async def default(self, ctx, param):
         return ctx.channel
+
 
 class Guild(CustomDefault):
     """Default parameter which returns the guild for this context."""
@@ -77,6 +90,7 @@ class Guild(CustomDefault):
         if ctx.guild:
             return ctx.guild
         raise MissingRequiredArgument(param)
+
 
 class Call(CustomDefault):
     """Easy wrapper for lambdas/inline defaults."""
