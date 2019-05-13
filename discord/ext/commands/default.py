@@ -75,13 +75,11 @@ class Author(CustomDefault):
     async def default(self, ctx, param):
         return ctx.author
 
-
 class Channel(CustomDefault):
     """Default parameter which returns the channel for this context."""
 
     async def default(self, ctx, param):
         return ctx.channel
-
 
 class Guild(CustomDefault):
     """Default parameter which returns the guild for this context."""
@@ -90,7 +88,6 @@ class Guild(CustomDefault):
         if ctx.guild:
             return ctx.guild
         raise MissingRequiredArgument(param)
-
 
 class Call(CustomDefault):
     """Easy wrapper for lambdas/inline defaults."""
