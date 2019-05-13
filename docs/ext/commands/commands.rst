@@ -600,14 +600,14 @@ A DefaultParam returning `None` is valid - if this should be an error, raise :cl
 
 .. code-block:: python3
 
-    class AnyImage(Converter):
+    class Image(Converter):
         """Find images associated with the message."""
 
         async def convert(self, ctx, argument):
             if argument.startswith("http://") or argument.startswith("https://"):
                 return argument
 
-            member = await UserMemberConverter().convert(ctx, argument)
+            member = await MemberConverter().convert(ctx, argument)
             if member:
                 return str(member.avatar_url_as(format="png"))
 
@@ -636,7 +636,7 @@ A DefaultParam returning `None` is valid - if this should be an error, raise :cl
             async with sess.get(image) as resp:
                 resp.raise_for_status()
                 my_bytes = io.BytesIO(await resp.content.read())
-        await ctx.send(file=discord.File(name="your_image", fp=my_bytes))
+        await ctx.send(file=discord.File(filename="your_image", fp=my_bytes))
 
 
 Checks
