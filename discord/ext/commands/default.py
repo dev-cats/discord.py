@@ -42,6 +42,9 @@ class CustomDefaultMeta(type):
         return super().__new__(cls, name, bases, attrs, **kwargs)
 
     def __repr__(cls):
+        return str(cls)
+    
+    def __str__(cls):
         return cls.display
 
 
