@@ -34,7 +34,6 @@ __all__ = (
     'Call',
 )
 
-
 class CustomDefaultMeta(type):
     def __new__(cls, *args, **kwargs):
         name, bases, attrs = args
@@ -46,7 +45,6 @@ class CustomDefaultMeta(type):
     
     def __str__(cls):
         return cls.display
-
 
 class CustomDefault(metaclass=CustomDefaultMeta):
     """The base class of custom defaults that require the :class:`.Context`.
