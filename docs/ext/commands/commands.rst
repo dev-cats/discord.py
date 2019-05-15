@@ -638,47 +638,7 @@ A DefaultParam returning `None` is valid - if this should be an error, raise :cl
                 my_bytes = io.BytesIO(await resp.content.read())
         await ctx.send(file=discord.File(filename="your_image", fp=my_bytes))
 
-.. tip:: You can change the name of a Custom Default that is displayed in help command by passing ``display`` meta option.
-Using previous example: ``class LastImage(CustomDefault, display='last image from chat')``
-
-.. code-block:: python3
-    class Image(Converter):
-        """Find images associated with the message."""
-
-        async def convert(self, ctx, argument):
-            if argument.startswith("http://") or argument.startswith("https://"):
-                return argument
-
-            member = await MemberConverter().convert(ctx, argument)
-            if member:
-                return str(member.avatar_url_as(format="png"))
-
-            raise errors.BadArgument(f"{argument} isn't a member or url.")
-
-    class LastImage(CustomDefault, display="Last image in chat"):
-        """Default param which finds the last image in chat."""
-
-        async def default(self, ctx, param):
-            for attachment in message.attachments:
-                if attachment.proxy_url:
-                    return attachment.proxy_url
-            async for message in ctx.history(ctx, limit=100):
-                for embed in message.embeds:
-                    if embed.thumbnail and embed.thumbnail.proxy_url:
-                        return embed.thumbnail.proxy_url
-                for attachment in message.attachments:
-                    if attachment.proxy_url:
-                        return attachment.proxy_url
-
-            raise errors.MissingRequiredArgument(param)
-
-    @bot.command()
-    async def echo_image(ctx, *, image: Image = LastImage):
-        async with aiohttp.ClientSession() as sess:
-            async with sess.get(image) as resp:
-                resp.raise_for_status()
-                my_bytes = io.BytesIO(await resp.content.read())
-        await ctx.send(file=discord.File(filename="your_image", fp=my_bytes))
+.. tip:: You can change the name of a Custom Default that is displayed in help command by passing ``display`` meta option. Using previous example: ``class LastImage(CustomDefault, display='last image from chat')``
 
 
 
